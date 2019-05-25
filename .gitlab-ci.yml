@@ -4,6 +4,6 @@ job:
     - shell
   script:
     - module load cmake/3.9.2
-    - cmake -DMPI=ON
+    - cmake -DWITH_KVTREE_PREFIX=$HOME/kvtree/KVTree.git/install -DMPI=ON
     - make VERBOSE=1
     - make check
