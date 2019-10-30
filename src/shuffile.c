@@ -85,11 +85,15 @@ static int shuffile_unlink(kvtree* hash, int rank)
 
 /* gather list data to rank 0 in storage communicator,
  * and write data to the specified file name */
-static void shuffile_write_file(
+static int shuffile_write_file(
   MPI_Comm comm_storage,
   const char* name,
   const kvtree* list)
 {
+  if(name == NULL){
+    printf("shuffile_write_file name parameter is null\n");
+    return SHUFFILE_FAILURE; 
+  }
   /* make a copy of the input data */
   kvtree* list_copy = kvtree_new();
   kvtree_merge(list_copy, list);
@@ -120,7 +124,11 @@ static void shuffile_write_file(
     }
 
     /* store list to shuffle file */
-    kvtree_write_file(name, filedata);
+    int rc_kvtree = kvtree_write_file(name, filedata);
+    if(rc_kvtree != KVTREE_SUCCESS){
+      printf("shuffile_write_file kvtree_write_file() call failed\n");
+      return SHUFFILE_FAILURE; 
+    }
 
     /* release temporary object */
     kvtree_delete(&filedata);
@@ -131,18 +139,22 @@ static void shuffile_write_file(
   kvtree_delete(&send_hash);
 
   /* no need to free list_copy, as it was attached to send_hash */
-  return;
+  return SHUFFILE_SUCCESS;
 }
 
 /* scatter items in file to processes in storage communicator,
  * if owning process is in the communicator, it ends up with
  * its own data, otherwise data is evenly spread among processes */
-static void shuffile_read_file(
+static int shuffile_read_file(
   MPI_Comm comm,
   MPI_Comm comm_storage,
   const char* name,
   kvtree* list)
 {
+  if(name == NULL){
+    printf("shuffile_read_file name parameter is null\n");
+    return SHUFFILE_FAILURE; 
+  }
   /* get process name */
   int rank_world;
   MPI_Comm_rank(comm, &rank_world);
@@ -169,7 +181,12 @@ static void shuffile_read_file(
   if (rank_storage == 0) {
     /* read data from shuffile file */
     kvtree* filedata = kvtree_new();
-    kvtree_read_file(name, filedata);
+    int rc_kvtree = kvtree_read_file(name, filedata);
+    if(rc_kvtree != KVTREE_SUCCESS){
+      printf("shuffile_read_file kvtree_read_file() call failed\n");
+      return SHUFFILE_FAILURE;
+    }
+
 
     int target_rank = 0;
     kvtree* ranks_hash = kvtree_get(filedata, "RANK");
@@ -236,7 +253,7 @@ static void shuffile_read_file(
   kvtree_delete(&send_hash);
 
   /* no need to free list_copy, as it was attached to send_hash */
-  return;
+  return SHUFFILE_SUCCESS;
 }
 
 /* associate a set of files with a named process */
@@ -247,6 +264,7 @@ int shuffile_create(
   const char** files,
   const char* name)
 {
+  int rc = SHUFFILE_SUCCESS;
   MPI_Comm comm_world = comm;
 
   /* get name of process */
@@ -270,12 +288,12 @@ int shuffile_create(
   }
 
   /* write data to file */
-  shuffile_write_file(comm_storage, name, list);
+  rc = shuffile_write_file(comm_storage, name, list);
 
   /* free the list */
   kvtree_delete(&list);
 
-  return SHUFFILE_SUCCESS;
+  return rc;
 }
 
 /* drop association information,
@@ -286,6 +304,8 @@ int shuffile_remove(
   const char* name)
 {
   /* have rank 0 on in the storage group delete the file */
+if(name==NULL)
+  return SHUFFILE_FAILURE;
   int rank_storage;
   MPI_Comm_rank(comm_storage, &rank_storage);
   if (rank_storage == 0) {
@@ -525,6 +545,7 @@ int shuffile_migrate(
   MPI_Comm comm_storage,
   const char* name)
 {
+
   int i, round;
   int rc = SHUFFILE_SUCCESS;
 
@@ -858,7 +879,7 @@ int shuffile_migrate(
   shuffile_free(&have_rank_by_round);
 
   /* write out new filemap and free the memory resources */
-  shuffile_write_file(comm_storage, name, new_hash);
+  rc = shuffile_write_file(comm_storage, name, new_hash);
 
   /* free our hash objects */
   kvtree_delete(&hash);
