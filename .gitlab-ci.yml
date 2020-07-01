@@ -5,9 +5,12 @@ slurm-job:
   variables:
     LLNL_SLURM_SCHEDULER_PARAMETERS: "-N 3 -p pbatch"
   script:
-    - module load cmake/3.9.2
-    - cmake -DWITH_KVTREE_PREFIX=$HOME/kvtree/KVTree.git/install -DMPI=ON
-    - make VERBOSE=1
+#    - module load cmake/3.9.2
+#    - cmake -DWITH_KVTREE_PREFIX=$HOME/kvtree/KVTree.git/install -DMPI=ON
+#    - make VERBOSE=1
+    - ./buildme_deps
+    - ./buildme_shuffile
+    - cd build
     - make check
 lsf-job:
   tags:
@@ -16,7 +19,10 @@ lsf-job:
   variables:
     LLNL_LSF_SCHEDULER_PARAMETERS: "-nnodes 3 -q pbatch"
   script:
-    - module load cmake/3.9.2
-    - cmake -DWITH_KVTREE_PREFIX=$HOME/kvtree/KVTree.git/install -DMPI=ON
-    - make VERBOSE=1
+#    - module load cmake/3.9.2
+#    - cmake -DWITH_KVTREE_PREFIX=$HOME/kvtree/KVTree.git/install -DMPI=ON
+#    - make VERBOSE=1
+    - ./buildme_deps
+    - ./buildme_shuffile
+    - cd build
     - make check
