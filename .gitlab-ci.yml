@@ -3,26 +3,37 @@ slurm-job:
     - quartz
     - batch
   variables:
-    LLNL_SLURM_SCHEDULER_PARAMETERS: "-N 3 -p pbatch"
+     LLNL_SLURM_SCHEDULER_PARAMETERS: "-N 4 -p pbatch"
   script:
-#    - module load cmake/3.9.2
-#    - cmake -DWITH_KVTREE_PREFIX=$HOME/kvtree/KVTree.git/install -DMPI=ON
-#    - make VERBOSE=1
     - ./buildme_deps
-    - ./buildme_shuffile
+    - source /etc/profile.d/z00_lmod.sh
+    - set -x
+    - installdir=`pwd`/install
+    - rm -rf build
+    - mkdir build
     - cd build
+    - cmake -DWITH_AXL_PREFIX=../install -DCMAKE_INSTALL_PREFIX=$installdir -DVELOC_RESOURCE_MANAGER=SLURM -DCMAKE_BUILD_TYPE=Debug  -DOPENSSL_ROOT_DIR=/usr -DCMAKE_VERBOSE_BUILD=1 ..
+    - make
+    - make install
     - make check
 lsf-job:
   tags:
     - lassen
     - batch
   variables:
-    LLNL_LSF_SCHEDULER_PARAMETERS: "-nnodes 3 -q pbatch"
+     LLNL_LSF_SCHEDULER_PARAMETERS: "-nnodes 4 -q pbatch"
+     PERSISTENT: "/g/g19/kosinov/persistent"
+     SCRATCH: "/dev/shm/scratch"
   script:
-#    - module load cmake/3.9.2
-#    - cmake -DWITH_KVTREE_PREFIX=$HOME/kvtree/KVTree.git/install -DMPI=ON
-#    - make VERBOSE=1
     - ./buildme_deps
-    - ./buildme_shuffile
+    - source /etc/profile.d/z00_lmod.sh
+    - set -x
+    - installdir=`pwd`/install
+    - rm -rf build
+    - mkdir build
     - cd build
+    - cmake -DWITH_AXL_PREFIX=../install -DCMAKE_INSTALL_PREFIX=$installdir -DVELOC_RESOURCE_MANAGER=LSF -DCMAKE_BUILD_TYPE=Debug  -DOPENSSL_ROOT_DIR=/usr -DCMAKE_VERBOSE_BUILD=1 ..
+    - make
+    - make install
     - make check
+
