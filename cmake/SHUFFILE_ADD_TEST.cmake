@@ -1,4 +1,4 @@
-function(shuffile_add_test name args outputs)
+function(SHUFFILE_ADD_TEST name args outputs)
 
   # job launcher
   if(${VELOC_RESOURCE_MANAGER} STREQUAL "NONE")
@@ -14,4 +14,4 @@ function(shuffile_add_test name args outputs)
   # Tests
   add_test(NAME serial_${name}_start COMMAND ${test_param} ./${name} ${args} )
 
-endfunction(veloc_add_test)
+endfunction(SHUFFILE_ADD_TEST)
