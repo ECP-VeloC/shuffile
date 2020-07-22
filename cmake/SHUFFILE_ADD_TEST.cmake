@@ -2,7 +2,7 @@ function(SHUFFILE_ADD_TEST name args outputs)
 
   # job launcher
   if(${VELOC_RESOURCE_MANAGER} STREQUAL "LSF")
-    set(test_param jsrun -nnodes 3 -n 6)
+    set(test_param jsrun -r 2)
   elseif(${VELOC_RESOURCE_MANAGER} STREQUAL "SLURM")
     set(test_param srun -N 3 -n 6)
   endif()
