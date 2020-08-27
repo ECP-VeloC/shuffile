@@ -147,21 +147,21 @@ int main (int argc, char* argv[])
   rc_null = shuffile_create(comm_world, comm_store, 1, filelist, NULL);
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-    printf("shuffile_create succeded with NULL name parameter\n", rank);
+    printf("shuffile_create succeded with NULL name parameter\n");
     return TEST_FAIL;
   }
 
   rc_null = shuffile_migrate(comm_world, comm_store, NULL);
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-    printf("shuffile_migrate succeded with NULL name parameter\n", rank);
+    printf("shuffile_migrate succeded with NULL name parameter\n");
     return TEST_FAIL;
   }
 
   rc_null = shuffile_remove(comm_world, comm_store, NULL);
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-    printf("shuffile_remove succeded with NULL name parameter\n", rank);
+    printf("shuffile_remove succeded with NULL name parameter\n");
     return TEST_FAIL;
   }
 
@@ -169,19 +169,19 @@ int main (int argc, char* argv[])
   rc_null = shuffile_create(MPI_COMM_NULL, MPI_COMM_NULL, 1, filelist, "/dev/shm/shuffle");
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-    printf("shuffile_create succeded with MPI_COMM_NULL comm parameters\n", rank);
+    printf("shuffile_create succeded with MPI_COMM_NULL comm parameters\n");
     return TEST_FAIL;
   }
   rc_null = shuffile_migrate(MPI_COMM_NULL, MPI_COMM_NULL, "/dev/shm/shuffle");
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-    printf("shuffile_migrate succeded with MPI_COMM_NULL comm parameters\n", rank);
+    printf("shuffile_migrate succeded with MPI_COMM_NULL comm parameters\n");
     return TEST_FAIL;
   }
   rc_null = shuffile_remove(MPI_COMM_NULL, MPI_COMM_NULL, "/dev/shm/shuffle");
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-    printf("shuffile_remove succeded with MPI_COMM_NULL comm parameters\n", rank);
+    printf("shuffile_remove succeded with MPI_COMM_NULL comm parameters\n");
     return TEST_FAIL;
   }
 
