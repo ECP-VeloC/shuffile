@@ -95,6 +95,7 @@ static int shuffile_write_file(
               __FILE__, __LINE__);
     return SHUFFILE_FAILURE; 
   }
+
   /* make a copy of the input data */
   kvtree* list_copy = kvtree_new();
   kvtree_merge(list_copy, list);
