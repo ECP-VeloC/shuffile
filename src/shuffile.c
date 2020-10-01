@@ -156,11 +156,12 @@ static int shuffile_read_file(
   const char* name,
   kvtree* list)
 {
-  if(name == NULL){
+  if (name == NULL) {
       shuffile_err("shuffile_read_file name parameter is null @ %s:%d",
               __FILE__, __LINE__);
     return SHUFFILE_FAILURE; 
   }
+
   /* get process name */
   int rank_world;
   MPI_Comm_rank(comm, &rank_world);
