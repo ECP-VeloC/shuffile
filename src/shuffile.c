@@ -126,7 +126,7 @@ static int shuffile_write_file(
 
     /* store list to shuffle file */
     int rc_kvtree = kvtree_write_file(name, filedata);
-    if(rc_kvtree != KVTREE_SUCCESS){
+    if (rc_kvtree != KVTREE_SUCCESS) {
       shuffile_err("shuffile_write_file kvtree_write_file() call failed @ %s:%d",
               __FILE__, __LINE__);
       kvtree_delete(&filedata);
