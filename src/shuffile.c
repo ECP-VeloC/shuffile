@@ -90,11 +90,8 @@ static int shuffile_write_file(
   const char* name,
   const kvtree* list)
 {
-  if(name == NULL){
-    shuffile_err("shuffile_write_file name parameter is null @ %s:%d",
-              __FILE__, __LINE__);
-    return SHUFFILE_FAILURE; 
-  }
+  /* assume we'll succeed */
+  int rc = SHUFFILE_SUCCESS;
 
   /* make a copy of the input data */
   kvtree* list_copy = kvtree_new();
@@ -129,11 +126,8 @@ static int shuffile_write_file(
     int rc_kvtree = kvtree_write_file(name, filedata);
     if (rc_kvtree != KVTREE_SUCCESS) {
       shuffile_err("shuffile_write_file kvtree_write_file() call failed @ %s:%d",
-              __FILE__, __LINE__);
-      kvtree_delete(&filedata);
-      kvtree_delete(&recv_hash);
-      kvtree_delete(&send_hash);
-      return SHUFFILE_FAILURE; 
+        __FILE__, __LINE__);
+      rc = SHUFFILE_FAILURE;
     }
 
     /* release temporary object */
@@ -144,8 +138,13 @@ static int shuffile_write_file(
   kvtree_delete(&recv_hash);
   kvtree_delete(&send_hash);
 
+  /* check whether any ranks failed */
+  if (! shuffile_alltrue(rc == SHUFFILE_SUCCESS, comm_storage)) {
+    rc = SHUFFILE_FAILURE;
+  }
+
   /* no need to free list_copy, as it was attached to send_hash */
-  return SHUFFILE_SUCCESS;
+  return rc;
 }
 
 /* scatter items in file to processes in storage communicator,
@@ -157,11 +156,8 @@ static int shuffile_read_file(
   const char* name,
   kvtree* list)
 {
-  if (name == NULL) {
-      shuffile_err("shuffile_read_file name parameter is null @ %s:%d",
-              __FILE__, __LINE__);
-    return SHUFFILE_FAILURE; 
-  }
+  /* assume we'll succeed */
+  int rc = SHUFFILE_SUCCESS;
 
   /* get process name */
   int rank_world;
@@ -190,15 +186,10 @@ static int shuffile_read_file(
     /* read data from shuffile file */
     kvtree* filedata = kvtree_new();
     int rc_kvtree = kvtree_read_file(name, filedata);
-    if(rc_kvtree != KVTREE_SUCCESS){
-      shuffile_err("shuffile_read_file kvtree_read_file() call failed @ %s:%d",
-              __FILE__, __LINE__);
-      kvtree_delete(&send_hash);
-      kvtree_delete(&map_hash);
-      kvtree_delete(&filedata);
-      return SHUFFILE_FAILURE;
+    if (rc_kvtree != KVTREE_SUCCESS) {
+      /* failed to read the file */
+      rc = SHUFFILE_FAILURE;
     }
-
 
     int target_rank = 0;
     kvtree* ranks_hash = kvtree_get(filedata, "RANK");
@@ -264,8 +255,13 @@ static int shuffile_read_file(
   kvtree_delete(&map_hash);
   kvtree_delete(&send_hash);
 
+  /* check whether any ranks failed */
+  if (! shuffile_alltrue(rc == SHUFFILE_SUCCESS, comm)) {
+    rc = SHUFFILE_FAILURE;
+  }
+
   /* no need to free list_copy, as it was attached to send_hash */
-  return SHUFFILE_SUCCESS;
+  return rc;
 }
 
 /* associate a set of files with a named process */
@@ -276,16 +272,18 @@ int shuffile_create(
   const char** files,
   const char* name)
 {
-  if(name == NULL){
-    shuffile_err("shuffile_create name parameter is null @ %s:%d",
-           __FILE__, __LINE__);
-    return SHUFFILE_FAILURE; 
-  }
-  if((comm == MPI_COMM_NULL) || (comm_storage == MPI_COMM_NULL)){
+  if ((comm == MPI_COMM_NULL) || (comm_storage == MPI_COMM_NULL)) {
     shuffile_err("shuffile_create comm or comm_storage parameter is MPI_COMM_NULL @ %s:%d",
-           __FILE__, __LINE__);
+      __FILE__, __LINE__);
     return SHUFFILE_FAILURE; 
   }
+
+  if (name == NULL) {
+    shuffile_err("shuffile_create name parameter is null @ %s:%d",
+      __FILE__, __LINE__);
+    return SHUFFILE_FAILURE; 
+  }
+
   int rc = SHUFFILE_SUCCESS;
   MPI_Comm comm_world = comm;
 
@@ -325,17 +323,19 @@ int shuffile_remove(
   MPI_Comm comm_storage,
   const char* name)
 {
-  /* have rank 0 on in the storage group delete the file */
-  if(name == NULL){
-    shuffile_err("shuffile_remove comm or comm_storage parameter is MPI_COMM_NULL @ %s:%d",
-        __FILE__, __LINE__);
-    return SHUFFILE_FAILURE; 
-  }
-  if((comm == MPI_COMM_NULL) || (comm_storage == MPI_COMM_NULL)){
+  if ((comm == MPI_COMM_NULL) || (comm_storage == MPI_COMM_NULL)) {
     shuffile_err("shuffile_remove name parameter is MPI_COMM_NULL @ %s:%d",
-        __FILE__, __LINE__);
+      __FILE__, __LINE__);
     return SHUFFILE_FAILURE; 
   }
+
+  /* have rank 0 on in the storage group delete the file */
+  if (name == NULL) {
+    shuffile_err("shuffile_remove comm or comm_storage parameter is MPI_COMM_NULL @ %s:%d",
+      __FILE__, __LINE__);
+    return SHUFFILE_FAILURE; 
+  }
+
   int rank_storage;
   MPI_Comm_rank(comm_storage, &rank_storage);
   if (rank_storage == 0) {
@@ -575,14 +575,15 @@ int shuffile_migrate(
   MPI_Comm comm_storage,
   const char* name)
 {
-  if(name == NULL){
-    shuffile_err("shuffile_migrate name parameter is null @ %s:%d",
-          __FILE__, __LINE__);
+  if ((comm == MPI_COMM_NULL) || (comm_storage == MPI_COMM_NULL)) {
+    shuffile_err("shuffile_migrate comm or comm_storage parameter is MPI_COMM_NULL @ %s:%d",
+      __FILE__, __LINE__);
     return SHUFFILE_FAILURE; 
   }
-  if((comm == MPI_COMM_NULL) || (comm_storage == MPI_COMM_NULL)){
-    shuffile_err("shuffile_migrate comm or comm_storage parameter is MPI_COMM_NULL @ %s:%d",
-          __FILE__, __LINE__);
+
+  if (name == NULL) {
+    shuffile_err("shuffile_migrate name parameter is null @ %s:%d",
+      __FILE__, __LINE__);
     return SHUFFILE_FAILURE; 
   }
 
@@ -868,7 +869,7 @@ int shuffile_migrate(
             file_partner, recv_meta, recv_rank, comm_world) != SHUFFILE_SUCCESS)
         {
           shuffile_err("Swapping files: %s to %d, %s from %d @ %s:%d",
-                  file, send_rank, file_partner, recv_rank, __FILE__, __LINE__
+            file, send_rank, file_partner, recv_rank, __FILE__, __LINE__
           );
           rc = SHUFFILE_FAILURE;
         }
