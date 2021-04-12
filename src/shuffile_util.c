@@ -26,8 +26,6 @@
 #include "shuffile_util.h"
 #include "shuffile_io.h"
 
-#define SHUFFILE_VERSION "1.0"
-
 int shuffile_debug = 1;
 
 int shuffile_rank = -1;

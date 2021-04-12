@@ -7,6 +7,8 @@
 #define SHUFFILE_SUCCESS (0)
 #define SHUFFILE_FAILURE (1)
 
+#define SHUFFILE_VERSION "0.0.4"
+
 #define SHUFFILE_MAX_FILENAME (1024)
 
 extern int shuffile_debug;
