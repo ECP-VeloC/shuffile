@@ -240,8 +240,10 @@ int shuffile_swap_file_names(
       strcmp(file_send, "") != 0)
   {
     have_outgoing = 1;
-  } else {
-    /* nothing to send, make sure to use PROC_NULL in sendrecv call */
+  }
+
+  /* nothing to send, make sure to use PROC_NULL in sendrecv call */
+  if (! have_outgoing) {
     rank_send = MPI_PROC_NULL;
   }
 
@@ -252,8 +254,10 @@ int shuffile_swap_file_names(
       strcmp(dir_recv, "") != 0)
   {
     have_incoming = 1;
-  } else {
-    /* nothing to recv, make sure to use PROC_NULL in sendrecv call */
+  }
+
+  /* nothing to recv, make sure to use PROC_NULL in sendrecv call */
+  if (! have_incoming) {
     rank_recv = MPI_PROC_NULL;
   }
 

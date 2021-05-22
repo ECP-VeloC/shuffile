@@ -51,7 +51,7 @@ int main (int argc, char* argv[])
     cbuff[numBytes]  = '\0';
     if(numBytes != strlen(buf)){
       printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-      printf("wrote %d bytes to file, but read %d bytes from file\n", strlen(buf), numBytes);
+      printf("wrote %d bytes to file, but read %d bytes from file\n", (int)strlen(buf), numBytes);
       return TEST_FAIL;
     }
     else{
@@ -115,7 +115,7 @@ int main (int argc, char* argv[])
     cbuff[numBytes]  = '\0';
     if(numBytes != strlen(buf)){
       printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
-      printf("wrote %d bytes to file, but read %d bytes from file\n", strlen(buf), numBytes);
+      printf("wrote %d bytes to file, but read %d bytes from file\n", (int)strlen(buf), numBytes);
       return TEST_FAIL;
     }
     else{
