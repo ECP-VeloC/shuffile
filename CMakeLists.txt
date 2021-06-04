@@ -12,9 +12,6 @@ SET(CMAKE_POSITION_INDEPENDENT_CODE ON)
 #SET(CMAKE_C_FLAGS "-Wall")
 
 # Configuration Options
-SET(MPI ON)
-# OPTION(MPI "Enable MPI operations for kvtrees" ON)
-
 OPTION(BUILD_SHARED_LIBS "Whether to build shared libraries" ON)
 MESSAGE(STATUS "BUILD_SHARED_LIBS: ${BUILD_SHARED_LIBS}")
 
@@ -32,19 +29,6 @@ MESSAGE(STATUS "ENABLE_TESTS: ${ENABLE_TESTS}")
 
 LIST(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
 
-## MPI
-IF(MPI)
-  INCLUDE(SetupMPI)
-  IF(MPI_C_FOUND)
-        INCLUDE_DIRECTORIES(${MPI_C_INCLUDE_PATH})
-        LIST(APPEND SHUFFILE_EXTERNAL_LIBS ${MPI_C_LIBRARIES})
-  ELSE(MPI_C_FOUND)
-        MESSAGE("WARNING: Could not find MPI!")
-        MESSAGE("         Either add an MPI compiler to your path (using modules)")
-        MESSAGE("         Or force CMake to build using the correct compiler (`export CC=mpicc`)")
-  ENDIF(MPI_C_FOUND)
-ENDIF(MPI)
-
 ## KVTREE
 FIND_PACKAGE(KVTREE REQUIRED)
 IF(KVTREE_FOUND)
@@ -52,6 +36,17 @@ IF(KVTREE_FOUND)
 	LIST(APPEND SHUFFILE_EXTERNAL_LIBS ${KVTREE_LIBRARIES})
 	LIST(APPEND SHUFFILE_LINK_LINE "-lkvtree")
 ENDIF(KVTREE_FOUND)
+
+## MPI
+INCLUDE(SetupMPI)
+IF(MPI_C_FOUND)
+      INCLUDE_DIRECTORIES(${MPI_C_INCLUDE_PATH})
+      LIST(APPEND SHUFFILE_EXTERNAL_LIBS ${MPI_C_LIBRARIES})
+ELSE(MPI_C_FOUND)
+      MESSAGE("WARNING: Could not find MPI!")
+      MESSAGE("         Either add an MPI compiler to your path (using modules)")
+      MESSAGE("         Or force CMake to build using the correct compiler (`export CC=mpicc`)")
+ENDIF(MPI_C_FOUND)
 
 ## ZLIB
 FIND_PACKAGE(ZLIB REQUIRED)

@@ -7,7 +7,7 @@ INCLUDE_DIRECTORIES(${CMAKE_CURRENT_SOURCE_DIR} ${PROJECT_BINARY_DIR})
 
 # Install header files
 LIST(APPEND libshuffile_install_headers
-	shuffile.h
+    shuffile.h
 )
 INSTALL(FILES ${libshuffile_install_headers} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 
