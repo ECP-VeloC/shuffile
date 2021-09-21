@@ -1,6 +1,8 @@
-# Overview
+# Shuffile
 
 [![Build Status](https://api.travis-ci.org/ECP-VeloC/shuffile.png?branch=main)](https://travis-ci.org/ECP-VeloC/shuffile)
+
+## Overview
 
 This module lets one associate a set of files with a process name.
 Currently, the name is implied to be the rank within MPI_COMM_WORLD.
@@ -10,9 +12,9 @@ locations to the new locations where the processes are running.
 
 Usage is documented in [src/shuffile.h]() and the [User API docs](https://ecp-veloc.github.io/component-user-docs/group__shuffile.html).
 
-# Building
+## Building
 
-To build KVTree:
+To build shuffile, first build the KVTree dependency:
 
     git clone git@github.com:LLNL/KVTree.git KVTree.git
 
@@ -30,7 +32,8 @@ To build shuffile:
     cmake -DCMAKE_BUILD_TYPE=Debug -DWITH_KVTREE_PREFIX=`pwd`/install .
     make
 
-# Testing
+## Testing
+
 Some simple test programs exist in the test directory that are run by the `test` target.
 
     make test
