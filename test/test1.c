@@ -12,6 +12,7 @@
 #include "mpi.h"
 
 #include "shuffile.h"
+#include "config.h"
 
 #define TEST_PASS (0)
 #define TEST_FAIL (1)
@@ -31,8 +32,8 @@ int main (int argc, char* argv[])
   sprintf(buf, "data from rank %d", rank);
 
   char filename[256];
-  sprintf(filename, "/dev/shm/testfile_%d.out", rank);
-  printf("filename = /dev/shm/testfile_%d.out\n", rank);
+  sprintf(filename, "%s/testfile_%d.out", SHUFFILE_TEST_BASE, rank);
+  printf("filename = %s/testfile_%d.out\n", SHUFFILE_TEST_BASE, rank);
   errno = 0;
   int fd = open(filename, O_WRONLY | O_TRUNC | O_CREAT, S_IRUSR | S_IWUSR);
   if (fd != -1) {
@@ -81,13 +82,15 @@ int main (int argc, char* argv[])
   MPI_Comm comm_store = MPI_COMM_WORLD;
 
   /* associate files in filelist with calling process */
-  shuffile_create(comm_world, comm_store, 1, filelist, "/dev/shm/shuffle");
+  char test_path[256];
+  sprintf(test_path, "%s/shuffle", SHUFFILE_TEST_BASE);
+  shuffile_create(comm_world, comm_store, 1, filelist, test_path);
 
   /* migrate files back to owner process */
-  shuffile_migrate(comm_world, comm_store, "/dev/shm/shuffle");
-     
+  shuffile_migrate(comm_world, comm_store, test_path);
+
   /* delete association information */
-  shuffile_remove(comm_world, comm_store, "/dev/shm/shuffle");
+  shuffile_remove(comm_world, comm_store, test_path);
 
   /* assume running two procs per node in block distribution */
   MPI_Comm_split(comm_world, rank / 2, 0, &comm_store);
@@ -97,15 +100,15 @@ int main (int argc, char* argv[])
   MPI_Comm_split(comm_world, 0, ranks - rank, &comm_restart);
 
   /* associate files in filelist with calling process */
-  shuffile_create(comm_world, comm_store, 1, filelist, "/dev/shm/shuffle");
+  shuffile_create(comm_world, comm_store, 1, filelist, test_path);
 
   /* migrate files back to owner process */
-  shuffile_migrate(comm_restart, comm_store, "/dev/shm/shuffle");
+  shuffile_migrate(comm_restart, comm_store, test_path);
 
-  //sprintf(filename, "/dev/shm/testfile_%d.out", ranks-rank/2);
+  //sprintf(filename, "%s/testfile_%d.out", SHUFFILE_TEST_BASE, ranks-rank/2);
   //sprintf(buf, "data from rank %d", ranks-rank/2);
   MPI_Comm_rank(comm_restart, &comm_restart_rank);
-  sprintf(filename, "/dev/shm/testfile_%d.out", comm_restart_rank);
+  sprintf(filename, "%s/testfile_%d.out", SHUFFILE_TEST_BASE, comm_restart_rank);
   sprintf(buf, "data from rank %d", comm_restart_rank);
   errno = 0;
   fdr = open(filename, O_RDONLY);
@@ -137,7 +140,7 @@ int main (int argc, char* argv[])
     return TEST_FAIL;
   }
   /* delete association information */
-  shuffile_remove(comm_world, comm_store, "/dev/shm/shuffle");
+  shuffile_remove(comm_world, comm_store, test_path);
 
   MPI_Comm_free(&comm_store);
   MPI_Comm_free(&comm_restart);
@@ -166,19 +169,19 @@ int main (int argc, char* argv[])
   }
 
   //MPI_COMM_NULL tests
-  rc_null = shuffile_create(MPI_COMM_NULL, MPI_COMM_NULL, 1, filelist, "/dev/shm/shuffle");
+  rc_null = shuffile_create(MPI_COMM_NULL, MPI_COMM_NULL, 1, filelist, test_path);
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
     printf("shuffile_create succeded with MPI_COMM_NULL comm parameters\n");
     return TEST_FAIL;
   }
-  rc_null = shuffile_migrate(MPI_COMM_NULL, MPI_COMM_NULL, "/dev/shm/shuffle");
+  rc_null = shuffile_migrate(MPI_COMM_NULL, MPI_COMM_NULL, test_path);
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
     printf("shuffile_migrate succeded with MPI_COMM_NULL comm parameters\n");
     return TEST_FAIL;
   }
-  rc_null = shuffile_remove(MPI_COMM_NULL, MPI_COMM_NULL, "/dev/shm/shuffle");
+  rc_null = shuffile_remove(MPI_COMM_NULL, MPI_COMM_NULL, test_path);
   if(rc_null == SHUFFILE_SUCCESS){
     printf ("Error in line %d, file %s, function %s.\n", __LINE__, __FILE__, __func__);
     printf("shuffile_remove succeded with MPI_COMM_NULL comm parameters\n");

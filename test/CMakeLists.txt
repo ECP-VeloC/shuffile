@@ -6,6 +6,8 @@
 # Add tests to ctest
 ################
 
+INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
+
 IF(SHUFFILE_LINK_STATIC)
    SET(shuffile_lib shuffile-static)
 ELSE()
