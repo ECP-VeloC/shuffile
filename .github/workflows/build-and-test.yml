@@ -35,18 +35,14 @@ jobs:
           os: ${{ matrix.os }}
           mpi: $${{ matrix.mpi }}
 
-      - name: configure
-        run: |
-          mkdir build
-          cd build
-          cmake ../shuffile
+      - name: install kvtree
+        uses: ecp-veloc/github-action/build-ecp-veloc-component@main
+        with:
+          component: kvtree
 
-      - name: build
-        run: |
-          cd build
-          make
-
-      - name: check
-        run: |
-          cd build
-          make check
+      - name: build and test
+        uses: ecp-veloc/github-actions/cmake-build-test@main
+        with:
+          component: shuffile
+          target: ${{ matrix.target }}
+          cmake_line: "-DBUILD_SHARED_LIBS=ON -DSHUFFILE_LINK_STATIC=ON"
