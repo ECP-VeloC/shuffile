@@ -36,7 +36,7 @@ jobs:
           mpi: $${{ matrix.mpi }}
 
       - name: install kvtree
-        uses: ecp-veloc/github-action/build-ecp-veloc-component@main
+        uses: ecp-veloc/github-actions/build-ecp-veloc-component@main
         with:
           component: kvtree
 
