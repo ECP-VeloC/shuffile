@@ -1,6 +1,6 @@
 # Shuffile
 
-[![Build Status](https://api.travis-ci.org/ECP-VeloC/shuffile.png?branch=main)](https://travis-ci.org/ECP-VeloC/shuffile)
+[![build-only](https://github.com/ECP-VeloC/shuffile/actions/workflows/build-and-test.yml/badge.svg)](https://github.com/ECP-VeloC/shuffile/actions/workflows/build-and-test.yml)
 
 ## Overview
 
