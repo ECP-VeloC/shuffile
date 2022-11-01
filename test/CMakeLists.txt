@@ -9,9 +9,9 @@
 INCLUDE_DIRECTORIES(${PROJECT_BINARY_DIR})
 
 IF(SHUFFILE_LINK_STATIC)
-   SET(shuffile_lib shuffile-static)
+   SET(shuffile_lib shuffile::shuffile-static)
 ELSE()
-   SET(shuffile_lib shuffile)
+   SET(shuffile_lib shuffile::shuffile)
 ENDIF()
 
 ADD_EXECUTABLE(shuffile_test test1.c)
