@@ -15,8 +15,9 @@ jobs:
       matrix:
         os: [ubuntu-latest, macos-latest]
         target: [Debug, Release]
+        static: [both, static]
 
-    name: ${{ matrix.os }}-${{ matrix.target }}
+    name: ${{ matrix.os }}-${{ matrix.target }}-${{ matrix.static }}
 
     runs-on: ${{ matrix.os }}
 
@@ -38,14 +39,20 @@ jobs:
         with:
           component: kvtree
 
-      - name: build static
-        uses: ecp-veloc/github-actions/cmake-build-static@main
+      - name: configure
+        uses: ecp-veloc/github-actions/cmake-configure@main
         with:
           component: shuffile
           target: ${{ matrix.target }}
+          static: ${{ matrix.static == 'static' }}
 
-      - name: build and test
-        uses: ecp-veloc/github-actions/cmake-build-only@main
+      - name: build
+        uses: ecp-veloc/github-actions/cmake-build@main
         with:
           component: shuffile
-          target: ${{ matrix.target }}
+
+      - name: test
+        if: false
+        uses: ecp-veloc/github-actions/cmake-test@main
+        with:
+          component: shuffile
