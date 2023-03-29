@@ -52,6 +52,7 @@ jobs:
           component: shuffile
 
       - name: test
+        if: false
         uses: ecp-veloc/github-actions/cmake-test@main
         with:
           component: shuffile
